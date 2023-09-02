@@ -53,7 +53,8 @@ export const card = (bill) => {
 }
 
 export const cards = (bills) => {
-  return bills && bills.length ? bills.map(bill => card(bill)).join("") : ""
+  const antiChrono = (a, b) =>  b.date.localeCompare(a.date)
+  return (bills && bills.length) ? bills.sort(antiChrono).map(bill => card(bill)).join("") : ""
 }
 
 export const getStatus = (index) => {
