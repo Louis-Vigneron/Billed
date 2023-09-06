@@ -2,12 +2,12 @@
  * @jest-environment jsdom
  */
 
-import {screen, waitFor} from "@testing-library/dom"
-import BillsUI from "../views/BillsUI.js"
-import { bills } from "../fixtures/bills.js"
-import { ROUTES_PATH} from "../constants/routes.js";
-import {localStorageMock} from "../__mocks__/localStorage.js";
-
+import { screen, waitFor } from "@testing-library/dom";
+import BillsUI from "../views/BillsUI.js";
+import { bills } from "../fixtures/bills.js";
+import { ROUTES_PATH } from "../constants/routes.js";
+import { localStorageMock } from "../__mocks__/localStorage.js";
+import Bills from "../containers/Bills.js";
 import router from "../app/Router.js";
 
 describe("Given I am connected as an employee", () => {
@@ -35,5 +35,46 @@ describe("Given I am connected as an employee", () => {
       const datesSorted = [...dates].sort(antiChrono)
       expect(dates).toEqual(datesSorted)
     })
+
+    //
+    describe("When I click on the eye icon", () => {
+      test("Then modal would be open", () => {
+        // Create a new instance of the Bills class
+        const bill = new Bills({
+          document,
+          onNavigate,
+          store: null,
+          localStorage: window.localStorage
+        })
+
+        // Set the HTML content of the document body with bills data
+        document.body.innerHTML = BillsUI({ data: bills })
+
+        // Mock the modal function using jest
+        $.fn.modal = jest.fn();
+
+        // Create a new DOM element representing an icon
+        const icon = document.createElement("div");
+
+        // Create a spy to track the 'handleClickIconEye' method of the 'bill' instance
+        const spy = jest.spyOn(bill, 'handleClickIconEye');
+
+        // Create a new function 'handleClickIconEye' that calls the original method
+        const handleClickIconEye = jest.fn((e) => bill.handleClickIconEye(icon));
+
+        // Add a click event listener to the icon, which will trigger the 'handleClickIconEye' function
+        icon.addEventListener('click', handleClickIconEye);
+
+        // Simulate a click on the icon
+        icon.click();
+
+        // Expect the 'handleClickIconEye' method to have been called
+        expect(spy).toHaveBeenCalled();
+
+        // Restore the original method after the test
+        spy.mockRestore();
+      })
+    })
   })
 })
+
