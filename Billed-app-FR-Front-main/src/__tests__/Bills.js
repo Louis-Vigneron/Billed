@@ -36,7 +36,6 @@ describe("Given I am connected as an employee", () => {
       expect(dates).toEqual(datesSorted)
     })
 
-    //
     describe("When I click on the eye icon", () => {
       test("Then modal would be open", () => {
         // Create a new instance of the Bills class
@@ -73,6 +72,27 @@ describe("Given I am connected as an employee", () => {
 
         // Restore the original method after the test
         spy.mockRestore();
+      })
+    })
+
+    describe("When I click on button new bill", () => {
+      test("Then redirect on NewBill page", () => {
+        // Create a mock function for the 'onNavigate' method
+        const mockOnNavigate = jest.fn();
+
+        // Create an instance of the 'Bills' class, passing the mock 'onNavigate' function
+        const bill = new Bills({
+          document,
+          onNavigate: mockOnNavigate,
+          store: null,
+          localStorage: window.localStorage
+        });
+
+        // Call the 'handleClickNewBill' method of the 'bill' instance
+        bill.handleClickNewBill();
+
+        // Expect that the 'onNavigate' method was called with the specified route
+        expect(mockOnNavigate).toHaveBeenCalledWith(ROUTES_PATH['NewBill']);
       })
     })
   })
