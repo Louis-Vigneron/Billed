@@ -18,13 +18,17 @@ describe("Given I am connected as an employee", () => {
   describe("When I am on NewBill Page", () => {
 
     test("Then I change file with PNG/JPEG/JPG", () => {
+      // Set user information in local storage for testing
       window.localStorage.setItem('user', JSON.stringify({
         type: 'Employee',
         email: "a@a"
       }))
+
+      // Create a new DOM with NewBillUI
       document.body.innerHTML = NewBillUI()
       $.fn.modal = jest.fn();
-    
+
+      // Initialize NewBill component
       const newBill = new NewBill({
         document,
         onNavigate: null,
@@ -32,44 +36,79 @@ describe("Given I am connected as an employee", () => {
         localStorage: window.localStorage
       })
 
+      // Create a mock file for testing
       const file =  {
         target:{
         files : [new File(["test.png"], "test.png", { type: 'image/png' })]
       }}
+
+      // Get the file input element
       const input = screen.getByTestId('file');     
+
+      // Create a mock function for handling file change
       const handleChangeFile = jest.fn(() => newBill.handleChangeFile)
+
+      // Add a change event listener to the input
       input.addEventListener("change", handleChangeFile)
+
+      // Simulate a file change event
       fireEvent.change(input, file);
+
+      // Assert that the handleChangeFile function was called
       expect(handleChangeFile).toHaveBeenCalled()
+
+      // Assert that the input files contain the expected file name
       expect(input.files[0].name).toBe("test.png"); 
     })
   
 
     test("Then I submit new bill", () => {
+
+      // Set user information in local storage for testing
       window.localStorage.setItem('user', JSON.stringify({
         type: 'Employee',
         email: "a@a"
       }))
+
+      // Create a mock function for onNavigate
       const mockOnNavigate = jest.fn();
+
+      // Create a new DOM with NewBillUI
       document.body.innerHTML = NewBillUI()
+
+      // Initialize NewBill component
       const newBill = new NewBill({
         document,
         onNavigate: mockOnNavigate,
         store: null,
         localStorage: window.localStorage
       })
+
+      // Create a fake input element with a data-testid attribute
       const fakeInput = document.createElement("input")
       fakeInput.setAttribute('data-testid', "")
+
+      // Create a mock event object for handleSubmit
       const event = {
         preventDefault: jest.fn(),
         target: {
           querySelector: () => fakeInput,
         }
       };
+
+      // Spy on the handleSubmit function
       const spy = jest.spyOn(newBill, "handleSubmit")
+
+      // Call the handleSubmit function with the mock event
       newBill.handleSubmit(event);
+
+      // Assert that the handleSubmit function was called
       expect(spy).toHaveBeenCalled()
+
+      // Assert that mockOnNavigate was called with the 'Bills' route
       expect(mockOnNavigate).toHaveBeenCalledWith(ROUTES_PATH['Bills']);
+
+      // Restore the spy
       spy.mockRestore();
     })   
     
